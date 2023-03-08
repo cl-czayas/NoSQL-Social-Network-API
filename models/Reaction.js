@@ -1,24 +1,38 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
 
-const reactionSchema = new Schema({
-  type: {
-    type: String,
-    required: true,
-    enum: ['like', 'love', 'dislike'],
-  },
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  thoughts: {
-    type: Schema.Types.ObjectId,
-    ref: 'Thought',
-    required: true,
-  },
-});
+// Schema to create Reaction model
+const reactionSchema = new Schema(
+  {
+    reactionID: {
+        type: Schema.Types.ObjectId,
+        default: () => new Types.ObjectId(),
+    },
+    reactionBody: {
+      type: String,
+      required: true,
+      maxlength: 280,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref:"User",
+      required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        get:function(){
+          return new Date(this.createdAt).toISOString()
+        }
+  
+      },
+    },
+  {
+    toJSON: {
+      getters: true,
+    },
+  }
+);
 
-//Initialize our Reaction model
 const Reaction = model('Reaction', reactionSchema);
 
-module.exports = Reaction;
+module.exports = {Reaction,reactionSchema};
